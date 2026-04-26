@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Logic | Multi-Panel Deployer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glow-overlay"></div>
+    <div class="container">
+        <header>
+            <div class="status-bar">
+                <span class="dot pulse"></span> NETWORK_ONLINE
+            </div>
+            <h1>CORE <span class="accent">V2</span></h1>
+            <p class="subtitle">Multi-Node Automated Provisioning</p>
+        </header>
+
+        <main>
+            <div class="input-group">
+                <label>NODE_TARGET</label>
+                <select id="panelType">
+                    <option value="panel1">PANEL 1 (PUBLIC-PRO)</option>
+                    <option value="panel2">PANEL 2 (PUBLIC-VIP)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>IDENTIFIER_NAME</label>
+                <input type="text" id="serverName" placeholder="Node identifier..." autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>RAM_ALLOCATION</label>
+                <select id="ramLimit">
+                    <option value="1024">1 GB - LITE</option>
+                    <option value="5120">5 GB - PRO</option>
+                    <option value="10240">10 GB - MAX</option>
+                    <option value="0">UNLIMITED - OVERLOAD</option>
+                </select>
+            </div>
+
+            <button onclick="deployServer()" id="deployBtn">EXECUTE DEPLOYMENT</button>
+            
+            <div id="terminal" class="terminal-box">
+                <div class="terminal-line">> System initialized. Ready for command...</div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function deployServer() {
+            const btn = document.getElementById('deployBtn');
+            const terminal = document.getElementById('terminal');
+            const name = document.getElementById('serverName').value;
+            const ram = document.getElementById('ramLimit').value;
+            const panel = document.getElementById('panelType').value;
+
+            if(!name) {
+                terminal.innerHTML += `<div class="terminal-line error">> ERROR: Identifier required.</div>`;
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "INITIALIZING...";
+            terminal.innerHTML += `<div class="terminal-line">> Handshaking with ${panel}...</div>`;
+
+            try {
+                const response = await fetch('/.netlify/functions/create-server', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, ram, panel })
+                });
+                const data = await response.json();
+
+                if(response.ok) {
+                    terminal.innerHTML += `<div class="terminal-line success">> SUCCESS: Node ${data.id} online on ${panel}.</div>`;
+                } else {
+                    terminal.innerHTML += `<div class="terminal-line error">> ERROR: ${data.message}</div>`;
+                }
+            } catch (err) {
+                terminal.innerHTML += `<div class="terminal-line error">> CRITICAL: Connection refused.</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "EXECUTE DEPLOYMENT";
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
