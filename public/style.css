@@ -1,0 +1,16 @@
+/* Ambil CSS dari jawaban sebelumnya, tambahkan ini di bagian bawah */
+
+.pulse {
+    animation: shadow-pulse 2s infinite;
+}
+
+@keyframes shadow-pulse {
+    0% { box-shadow: 0 0 0 0px rgba(0, 255, 136, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+    100% { box-shadow: 0 0 0 0px rgba(0, 255, 136, 0); }
+}
+
+select option {
+    background: #1a1d29;
+    color: white;
+}
