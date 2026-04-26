@@ -1,0 +1,13 @@
+[build]
+  # Folder tempat file index.html dan style.css berada
+  publish = "public"
+
+  # Folder tempat script create-server.js berada
+  functions = "netlify/functions"
+
+# Pengaturan agar fungsi API bisa dipanggil dengan benar
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  
